@@ -83,6 +83,7 @@ function monthsBack(year, month) {
   return curYear * 12 + curMonth - month - year * 12;
 }
 
+// Attempting stuff
 function weightedData(data, weights, filters) {
   valueTable = [];
   TODO;
