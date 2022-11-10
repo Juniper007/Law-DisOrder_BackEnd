@@ -1,13 +1,12 @@
 import mongoose from "./mongoose.js";
 const { Schema } = mongoose;
 
-// const userSchema = new Schema(
-//     {
-//       name: { type: String, required: true },
-//       password: { type: String, required: true },
-//       highScore: {type: Number, required: true },
-//       totalScore: {type: Number, required: true },
-//     },
+const sourceTable = new Schema(
+    {
+      sourceName: { type: String, required: true },
+      dateLastUpdated: { type: String, required: true },
+      html: {type: String, required: true },
+    },
 //     {
 //       statics: {
 //         async findByLogin(name, password) {
@@ -29,13 +28,13 @@ const { Schema } = mongoose;
 //         },
 //     }
 //   }
-//   );
+  );
   
-//   const User = mongoose.model("User", userSchema);
+  const sourceDataInformation = mongoose.model("sourceTable", sourceTable);
   
 //   async function newUser(data) {
 //     return await User.create(data);
 //   }
   
   
-//   export { User, newUser };
+  export { sourceDataInformation };
