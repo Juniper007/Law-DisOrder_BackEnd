@@ -1,4 +1,4 @@
-import { SourceTable } from "./Update_model";
+import { add, addNewDatasets, SourceTable } from "./Update_model.js";
 
 let sampleDataset = {
     sourceName: "TestName",
@@ -9,8 +9,10 @@ let sampleDataset = {
 let array = [sampleDataset];
 
 
-function updateTable (array){
-    SourceTable.addNewDatasets()
+function updateTable (){
+    SourceTable.find
     
     return 
 }
+
+updateTable

@@ -1,20 +1,21 @@
 import fetch from "node-fetch";
-import { CronJob } from "cron";
+// import { CronJob } from "cron";
+import { SourceTable } from "../Mongo/Update_model.js";
 
 // TODO: fetch request to pull table from DB as array of objects
 
 // cron to schedule... weekly? daily? at midnight?
 // var CronJob = require('cron').CronJob;
-let job = new CronJob(
-	// '* * * * * *', what is this for?
+// let job = new CronJob(
+// 	// '* * * * * *', what is this for?
     
-    function() {
-// call on functions to do stuff
-	},
-	null,
-	true,
-	'America/Los_Angeles'
-);
+//     function() {
+// // call on functions to do stuff
+// 	},
+// 	null,
+// 	true,
+// 	'America/Los_Angeles'
+// );
 // Use this if the 4th param is default value(false)
 // job.start()
 
@@ -24,6 +25,17 @@ function newFunction (array) {
         
     });
 }
+
+let ploop = {
+	sourceName:'Community Crime Statistics',
+	dateLastUpdated:'1',
+	url:'https://data.calgary.ca/Health-and-Safety/Community-Crime-Statistics/78gh-n26t'
+}
+
+// await fleece.save();
+SourceTable.addNewDatasets(ploop);
+// console.log(fleece.sourceName);
+// fleece.hi()
 
 /* fetch from DB the html to reference below (i.e. https://data.calgary.ca etc...) as well as last date updated
 await fetch from said https://data.calgary.ca/api/id/78gh-n26t(.json?)
