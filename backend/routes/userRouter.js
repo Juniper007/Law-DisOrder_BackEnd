@@ -1,5 +1,4 @@
 import { Router } from 'express';
-// import { createSuperhero } from '../db/models/superheroModel.js';
 import { User, addNewUser } from '../db/models/user_Model.js';
 import { debug } from '../server.js';
 
