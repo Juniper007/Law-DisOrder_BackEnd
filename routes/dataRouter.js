@@ -1,8 +1,21 @@
 import { Router } from 'express';
 import { debug } from '../express-server.js';
 import fetch from 'node-fetch';
+import { applyMath } from '../functions/functions.js';
 
 const router = Router();
+
+const weights = {
+  assault: 7,
+  bneStore: 6,
+  bneHome: 8,
+  bneOther: 6,
+  robStore: 5,
+  robStreet: 10,
+  robFromCar: 1,
+  robOfCar: 7,
+  violence: 10
+};
 
 router.post('/', async (req, res) => {
   const seasonReq = JSON.parse(req.body.timeFilters);
@@ -92,9 +105,10 @@ router.post('/', async (req, res) => {
       `https://data.calgary.ca/resource/78gh-n26t.json?$WHERE=${noGoodTerribleString}`
     );
     const rawData = await response.json();
-    console.log(rawData);
-    // const theResult = await applyMath(rawData.body);
-    res.send(rawData);
+    // console.log(rawData);
+    const mapResult = await applyMath(rawData, weights, true);
+    // console.log(mapResult);
+    res.send(mapResult);
   } catch (error) {
     debug(error);
     res.status(500).send(error);
