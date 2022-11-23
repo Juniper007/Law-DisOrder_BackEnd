@@ -7,7 +7,7 @@ import dataRouter from './routes/dataRouter.js';
 
 // myConfig.config();
 export const debug = DEBUG('express-server:routes');
-debug.enabled = false;
+debug.enabled = true;
 const port = 5000;
 const app = express();
 

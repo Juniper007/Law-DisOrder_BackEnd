@@ -1,13 +1,13 @@
 import { Router } from 'express';
 import { debug } from '../express-server.js';
+import fetch from 'node-fetch';
 
 const router = Router();
 
 router.post('/', async (req, res) => {
   const seasonReq = JSON.parse(req.body.timeFilters);
 
-  const userFilters = JSON.parse(req.body.crimeFilters);
-  console.log(seasonReq, userFilters);
+  const crimeReq = JSON.parse(req.body.crimeFilters);
   debug('in fetch route', req.body);
 
   let months = [];
@@ -47,54 +47,54 @@ router.post('/', async (req, res) => {
   }
   months[0] = `month=${months[0]}`;
   const timeString = months.join(' OR month=');
-  console.log(timeString);
-  // TODO
-  // if (timeFilters !== "summer") {
-  //   timeFilters = "summer";
-  // }
-  // for (const i in crimeFilters) {
-  //   switch (crimeFilters[i]) {
-  //     case "assault":
-  //       crimeFilters[i] = "Assault (Non-domestic)";
-  //       break;
-  //     case "bneStore":
-  //       crimeFilters[i] = "Break & Enter - Commercial";
-  //       break;
-  //     case "bneHome":
-  //       crimeFilters[i] = "Break & Enter - Dwelling";
-  //       break;
-  //     case "bneOther":
-  //       crimeFilters[i] = "Break & Enter - Other Premises";
-  //       break;
-  //     case "robStore":
-  //       crimeFilters[i] = "Commercial Robbery";
-  //       break;
-  //     case "robStreet":
-  //       crimeFilters[i] = "Street Robbery";
-  //       break;
-  //     case "robFromCar":
-  //       crimeFilters[i] = "Theft FROM Vehicle";
-  //       break;
-  //     case "robOfCar":
-  //       crimeFilters[i] = "Theft OF Vehicle";
-  //       break;
-  //     case "violence":
-  //       crimeFilters[i] = "Violence Other (Non-domestic)";
-  //       break;
-  //   }
-  // }
-  // join(' OR ')
-  // category=${userFilters}&month=${season}
-  console.log(`https://data.calgary.ca/resource/78gh-n26t.json?where=in(category, '${userFilters}')'
-)`);
+  let crimes = [];
+  for (const i in crimeReq) {
+    switch (crimeReq[i]) {
+      case 'assault':
+        crimeReq[i] = '"Assault (Non-domestic)"';
+        break;
+      case 'bneStore':
+        crimeReq[i] = '"Break & Enter - Commercial"';
+        break;
+      case 'bneHome':
+        crimeReq[i] = '"Break & Enter - Dwelling"';
+        break;
+      case 'bneOther':
+        crimeReq[i] = '"Break & Enter - Other Premises"';
+        break;
+      case 'robStore':
+        crimeReq[i] = '"Commercial Robbery"';
+        break;
+      case 'robStreet':
+        crimeReq[i] = '"Street Robbery"';
+        break;
+      case 'robFromCar':
+        crimeReq[i] = '"Theft FROM Vehicle"';
+        break;
+      case 'robOfCar':
+        crimeReq[i] = '"Theft OF Vehicle"';
+        break;
+      case 'violence':
+        crimeReq[i] = '"Violence Other (Non-domestic)"';
+        break;
+    }
+  }
+  crimeReq[0] = `category=${crimeReq[0]}`;
+  crimes = crimeReq.join(' OR category=');
+  const noGoodTerribleString = `(${crimes}) AND (${timeString})`;
+  console.log(
+    `https://data.calgary.ca/resource/78gh-n26t.json?$WHERE=${noGoodTerribleString}`
+  );
 
   try {
-    const rawData = await fetch(
-      `https://data.calgary.ca/resource/78gh-n26t.json?WHERE=${noGoodTerribleString}`
+    // fetch request with SoQL query based on outcome of switch statement
+    const response = await fetch(
+      `https://data.calgary.ca/resource/78gh-n26t.json?$WHERE=${noGoodTerribleString}`
     );
+    const rawData = await response.json();
+    console.log(rawData);
     // const theResult = await applyMath(rawData.body);
     res.send(rawData);
-    // fetch request with SoQL query based on outcome of switch statement
   } catch (error) {
     debug(error);
     res.status(500).send(error);
