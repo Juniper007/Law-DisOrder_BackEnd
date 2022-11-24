@@ -40,8 +40,8 @@ router.post('/', async (req, res) => {
         months = months.concat(['"SEP"', '"OCT"', '"NOV"']);
         break;
       default:
-        if (months === []) {
-          months.concat([
+        if (months.length === 0) {
+          months = months.concat([
             '"DEC"',
             '"JAN"',
             '"FEB"',
@@ -67,13 +67,13 @@ router.post('/', async (req, res) => {
         crimeReq[i] = '"Assault (Non-domestic)"';
         break;
       case 'bneStore':
-        crimeReq[i] = '"Break & Enter - Commercial"';
+        crimeReq[i] = '"Break %26 Enter - Commercial"';
         break;
       case 'bneHome':
-        crimeReq[i] = '"Break & Enter - Dwelling"';
+        crimeReq[i] = '"Break %26 Enter - Dwelling"';
         break;
       case 'bneOther':
-        crimeReq[i] = '"Break & Enter - Other Premises"';
+        crimeReq[i] = '"Break %26 Enter - Other Premises"';
         break;
       case 'robStore':
         crimeReq[i] = '"Commercial Robbery"';
@@ -95,17 +95,13 @@ router.post('/', async (req, res) => {
   crimeReq[0] = `category=${crimeReq[0]}`;
   crimes = crimeReq.join(' OR category=');
   const noGoodTerribleString = `(${crimes}) AND (${timeString})`;
-  console.log(
-    `https://data.calgary.ca/resource/78gh-n26t.json?$WHERE=${noGoodTerribleString}`
-  );
-
   try {
     // fetch request with SoQL query based on outcome of switch statement
     const response = await fetch(
-      `https://data.calgary.ca/resource/78gh-n26t.json?$WHERE=${noGoodTerribleString}`
+      `https://data.calgary.ca/resource/78gh-n26t.json?$WHERE=${noGoodTerribleString} limit 100000`
     );
     const rawData = await response.json();
-    // console.log(rawData);
+    console.log(rawData);
     const mapResult = await applyMath(rawData, weights, true);
     // console.log(mapResult);
     res.send(mapResult);

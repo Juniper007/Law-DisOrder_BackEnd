@@ -233,6 +233,6 @@ export function applyMath(crimeData, weightTable, hasRecencyBias) {
 
   const [normalizedByCommunity, summedByCommunity] =
     sumAndNormalize(weightedData);
-  const mapData = toGeoJSON(normalizedByCommunity);
+  const mapData = toGeoJSON(summedByCommunity);
   return mapData;
 }
