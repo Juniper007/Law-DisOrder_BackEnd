@@ -11,6 +11,7 @@
 //       "lat": "51.074239973666835",
 //       "month": "SEP"}
 //
+import fs from 'fs';
 
 function monthsBack(year, month) {
   const curYear = new Date().getFullYear();
@@ -201,29 +202,18 @@ function sumAndNormalize(weightedData) {
 }
 
 function toGeoJSON(crimeByCommunity) {
-  const mapFile = { type: 'FeatureCollection', features: [] };
+  const mapFile = JSON.parse(
+    fs.readFileSync('./functions/boundaries.geojson', 'utf-8')
+  );
+  console.log(mapFile);
   for (const i in crimeByCommunity) {
-    let communityObject = {};
-    communityObject.type = 'Feature';
-    communityObject.properties = {};
-    communityObject.properties.community = crimeByCommunity[i].community;
-    communityObject.properties.crimeScore = crimeByCommunity[i].crimeScore;
-    communityObject.geometry = {};
-    communityObject.geometry.type = 'Point';
-    communityObject.geometry.coordinates = [
-      crimeByCommunity[i].long,
-      crimeByCommunity[i].lat
-    ];
-    if (
-      crimeByCommunity[i].long !== null &&
-      crimeByCommunity[i].long !== undefined &&
-      crimeByCommunity[i].long !== 0 &&
-      crimeByCommunity[i].lat !== null &&
-      crimeByCommunity[i].lat !== undefined &&
-      crimeByCommunity[i].lat !== 0
-    ) {
-      mapFile.features.push(communityObject);
-    }
+    const communityName = crimeByCommunity[i].community;
+    console.log(communityName);
+    const community = mapFile.features.find(
+      (feature) => feature.properties.name === communityName
+    );
+    console.log(community);
+    community.properties.crimeScore = crimeByCommunity[i].crimeScore;
   }
   return mapFile;
 }
