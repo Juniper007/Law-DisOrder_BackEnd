@@ -207,6 +207,7 @@ function toGeoJSON(crimeByCommunity) {
   );
   console.log(mapFile);
   for (const i in crimeByCommunity) {
+    console.log(crimeByCommunity[i])
     const communityName = crimeByCommunity[i].community;
     // console.log("It's a-me "+communityName);
     const community = mapFile.features.find(
@@ -215,6 +216,7 @@ function toGeoJSON(crimeByCommunity) {
     // console.log("Hello " + community);
     if(community) {
     community.properties.crimeScore = crimeByCommunity[i].crimeScore;
+    community.properties.communityCentre= {lat: crimeByCommunity[i].lat, long: crimeByCommunity[i].long}
   }}
   return mapFile;
 }
