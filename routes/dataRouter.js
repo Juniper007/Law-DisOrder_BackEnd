@@ -18,9 +18,9 @@ const weights = {
 };
 
 router.post('/', async (req, res) => {
-  const seasonReq = JSON.parse(req.body.timeFilters);
+  const seasonReq = req.body.timeFilters;
 
-  const crimeReq = JSON.parse(req.body.crimeFilters);
+  const crimeReq = req.body.crimeFilters;
   debug('in fetch route', req.body);
 
   let months = [];
