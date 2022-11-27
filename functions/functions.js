@@ -208,13 +208,14 @@ function toGeoJSON(crimeByCommunity) {
   console.log(mapFile);
   for (const i in crimeByCommunity) {
     const communityName = crimeByCommunity[i].community;
-    console.log(communityName);
+    // console.log("It's a-me "+communityName);
     const community = mapFile.features.find(
       (feature) => feature.properties.name === communityName
     );
-    console.log(community);
+    // console.log("Hello " + community);
+    if(community) {
     community.properties.crimeScore = crimeByCommunity[i].crimeScore;
-  }
+  }}
   return mapFile;
 }
 
