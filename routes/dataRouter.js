@@ -5,21 +5,21 @@ import { applyMath } from '../functions/functions.js';
 
 const router = Router();
 
-const weights = {
-  assault: 7,
-  bneStore: 6,
-  bneHome: 8,
-  bneOther: 6,
-  robStore: 5,
-  robStreet: 10,
-  robFromCar: 1,
-  robOfCar: 7,
-  violence: 10
-};
+// const weights = {
+//   assault: 7,
+//   bneStore: 6,
+//   bneHome: 8,
+//   bneOther: 6,
+//   robStore: 5,
+//   robStreet: 10,
+//   robFromCar: 1,
+//   robOfCar: 7,
+//   violence: 10
+// };
 
 router.post('/', async (req, res) => {
   const seasonReq = req.body.timeFilters;
-
+  const weights = req.body.weights;
   const crimeReq = req.body.crimeFilters;
   debug('in fetch route', req.body);
 
@@ -61,47 +61,50 @@ router.post('/', async (req, res) => {
   months[0] = `month=${months[0]}`;
   const timeString = months.join(' OR month=');
   let crimes = [];
-  for (const i in crimeReq) {
-    switch (crimeReq[i]) {
-      case 'assault':
-        crimeReq[i] = '"Assault (Non-domestic)"';
-        break;
-      case 'bneStore':
-        crimeReq[i] = '"Break %26 Enter - Commercial"';
-        break;
-      case 'bneHome':
-        crimeReq[i] = '"Break %26 Enter - Dwelling"';
-        break;
-      case 'bneOther':
-        crimeReq[i] = '"Break %26 Enter - Other Premises"';
-        break;
-      case 'robStore':
-        crimeReq[i] = '"Commercial Robbery"';
-        break;
-      case 'robStreet':
-        crimeReq[i] = '"Street Robbery"';
-        break;
-      case 'robFromCar':
-        crimeReq[i] = '"Theft FROM Vehicle"';
-        break;
-      case 'robOfCar':
-        crimeReq[i] = '"Theft OF Vehicle"';
-        break;
-      case 'violence':
-        crimeReq[i] = '"Violence Other (Non-domestic)"';
-        break;
+  for (const i in weights) {
+    if (weights[i] > 0) {
+      switch (i) {
+        case 'assault':
+          crimes.push('"Assault (Non-domestic)"');
+          break;
+        case 'bneStore':
+          crimes.push('"Break %26 Enter - Commercial"');
+          break;
+        case 'bneHome':
+          crimes.push('"Break %26 Enter - Dwelling"');
+          break;
+        case 'bneOther':
+          crimes.push('"Break %26 Enter - Other Premises"');
+          break;
+        case 'robStore':
+          crimes.push('"Commercial Robbery"');
+          break;
+        case 'robStreet':
+          crimes.push('"Street Robbery"');
+          break;
+        case 'robFromCar':
+          crimes.push('"Theft FROM Vehicle"');
+          break;
+        case 'robOfCar':
+          crimes.push('"Theft OF Vehicle"');
+          break;
+        case 'violence':
+          crimes.push('"Violence Other (Non-domestic)"');
+          break;
+      }
     }
   }
-  crimeReq[0] = `category=${crimeReq[0]}`;
-  crimes = crimeReq.join(' OR category=');
+  crimes[0] = `category=${crimes[0]}`;
+  crimes = crimes.join(' OR category=');
   const noGoodTerribleString = `(${crimes}) AND (${timeString})`;
+  console.log(noGoodTerribleString);
   try {
     // fetch request with SoQL query based on outcome of switch statement
     const response = await fetch(
       `https://data.calgary.ca/resource/78gh-n26t.json?$WHERE=${noGoodTerribleString} limit 100000`
     );
     const rawData = await response.json();
-    console.log(rawData);
+    // console.log(rawData);
     const mapResult = await applyMath(rawData, weights, true);
     // console.log(mapResult);
     res.send(mapResult);
