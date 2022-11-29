@@ -97,7 +97,7 @@ router.post('/', async (req, res) => {
   crimes[0] = `category=${crimes[0]}`;
   crimes = crimes.join(' OR category=');
   const noGoodTerribleString = `(${crimes}) AND (${timeString})`;
-  console.log(noGoodTerribleString);
+  // console.log(noGoodTerribleString);
   try {
     // fetch request with SoQL query based on outcome of switch statement
     const response = await fetch(
