@@ -143,93 +143,90 @@ function weighCrime(crimeData, weightTable, hasRecencyBias = true) {
   return weightedData;
 }
 
-function sumAndNormalize(weightedData) {
-  let summedByCommunity = [];
-  const normalizedByCommunity = [];
-
-  let communityList = [];
-
-  // grabbing a community list out of the raw
-  {
-    for (const i in weightedData) {
-      communityList[i] = weightedData[i].community_name;
+function findCenter(long_latArray) {
+  let latMax = long_latArray[0][1];
+  let latMin = long_latArray[0][1];
+  let longMax = long_latArray[0][0];
+  let longMin = long_latArray[0][0];
+  for (const i in long_latArray) {
+    if (long_latArray[i] > longMax) {
+      longMax = long_latArray[i][0];
     }
-    communityList = [...new Set(communityList)];
-    communityList.sort();
+    if (long_latArray[i][0] < longMin) {
+      longMin = long_latArray[i][0];
+    }
+    if (long_latArray[i][1] > latMax) {
+      latMax = long_latArray[i][1];
+    }
+    if (long_latArray[i][1] < latMin) {
+      latMin = long_latArray[i][1];
+    }
   }
+  const long = (longMax + longMin) / 2;
+  const lat = (latMax + latMin) / 2;
+  return [long, lat];
+}
+
+function sumAndNormalize(weightedData) {
+  const sectorMap = JSON.parse(
+    fs.readFileSync('./functions/boundaries.geojson', 'utf-8')
+  );
   // Making an array of objects with {communityname, an empty crime score, latitude, longitude}
-  for (const i in communityList) {
-    summedByCommunity[i] = {};
-    summedByCommunity[i].community = communityList[i];
-    summedByCommunity[i].crimeScore = 0;
-    for (const j in weightedData) {
-      if (weightedData[j].community_name === communityList[i]) {
-        if (
-          summedByCommunity[i].lat === undefined ||
-          summedByCommunity[i].lat === 0 ||
-          summedByCommunity[i].lat === null
-        ) {
-          summedByCommunity[i].lat = weightedData[j].lat;
-        }
-        if (
-          summedByCommunity[i].long === undefined ||
-          summedByCommunity[i].long === 0 ||
-          summedByCommunity[i].long === null
-        ) {
-          summedByCommunity[i].long = weightedData[j].long;
-        }
-        summedByCommunity[i].crimeScore =
-          summedByCommunity[i].crimeScore + weightedData[j].crimeScore;
+  for (const i in sectorMap.features) {
+    sectorMap.features[i].properties.crimeScore = 0;
+    const [long, lat] = findCenter(sectorMap.features[i].geometry.coordinates);
+    sectorMap.features[i].properties.communityCentre = {
+      lat: lat,
+      long: long
+    };
+  }
+
+  for (const j in weightedData) {
+    for (const i in sectorMap.features) {
+      if (
+        weightedData[j].community_name === sectorMap.features[i].properties.name
+      ) {
+        sectorMap.features[i].properties.crimeScore =
+          sectorMap.features[i].properties.crimeScore +
+          weightedData[j].crimeScore;
+        break;
       }
     }
   }
+  // for (const i in sectorMap.features) {
+  //   sectorMap.features[i].properties.crimeScore = 0;
+  //   const [long, lat] = findCenter(sectorMap.features[i].geometry.coordinates);
+  //   sectorMap.features[i].properties.communityCentre = { lat: lat, long: long };
+  //   for (const j in weightedData) {
+  //     if (
+  //       weightedData[j].community_name === sectorMap.features[i].properties.name
+  //     ) {
+  //       sectorMap.features[i].properties.crimeScore =
+  //         sectorMap.features[i].properties.crimeScore +
+  //         weightedData[j].crimeScore;
+  //     }
+  //   }
+  // }
 
   let max = 0;
-  for (const i in summedByCommunity) {
-    normalizedByCommunity[i] = {};
-    if (summedByCommunity[i].crimeScore > max) {
-      max = summedByCommunity[i].crimeScore;
+  for (const i in sectorMap.features) {
+    if (sectorMap.features[i].properties.crimeScore > max) {
+      max = sectorMap.features[i].properties.crimeScore;
     }
-    Object.assign(normalizedByCommunity[i], summedByCommunity[i]);
   }
-  for (const i in normalizedByCommunity) {
+  for (const i in sectorMap.features) {
     if (max > 0) {
-      normalizedByCommunity[i].crimeScore =
-        normalizedByCommunity[i].crimeScore / max;
+      sectorMap.features[i].properties.crimeScore =
+        sectorMap.features[i].properties.crimeScore / max;
     }
   }
-  return [normalizedByCommunity, summedByCommunity];
-}
-
-function toGeoJSON(crimeByCommunity) {
-  const mapFile = JSON.parse(
-    fs.readFileSync('./functions/boundaries.geojson', 'utf-8')
-  );
-  // console.log(mapFile);
-  for (const i in crimeByCommunity) {
-    // console.log(crimeByCommunity[i])
-    const communityName = crimeByCommunity[i].community;
-    // console.log("It's a-me "+communityName);
-    const community = mapFile.features.find(
-      (feature) => feature.properties.name === communityName
-    );
-    // console.log("Hello " + community);
-    if (community) {
-      community.properties.crimeScore = crimeByCommunity[i].crimeScore;
-      community.properties.communityCentre = {
-        lat: crimeByCommunity[i].lat,
-        long: crimeByCommunity[i].long
-      };
-    }
-  }
+  const mapFile = sectorMap;
   return mapFile;
 }
 
 export function applyMath(crimeData, weightTable, hasRecencyBias) {
   const weightedData = weighCrime(crimeData, weightTable, hasRecencyBias);
 
-  const [normalizedByCommunity, summedByCommunity] =
-    sumAndNormalize(weightedData);
-  const mapData = toGeoJSON(summedByCommunity);
+  const mapData = sumAndNormalize(weightedData);
   return mapData;
 }
