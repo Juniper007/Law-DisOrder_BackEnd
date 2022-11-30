@@ -175,17 +175,38 @@ function sumAndNormalize(weightedData) {
   for (const i in sectorMap.features) {
     sectorMap.features[i].properties.crimeScore = 0;
     const [long, lat] = findCenter(sectorMap.features[i].geometry.coordinates);
-    sectorMap.features[i].properties.communityCentre = { lat: lat, long: long };
-    for (const j in weightedData) {
+    sectorMap.features[i].properties.communityCentre = {
+      lat: lat,
+      long: long
+    };
+  }
+
+  for (const j in weightedData) {
+    for (const i in sectorMap.features) {
       if (
         weightedData[j].community_name === sectorMap.features[i].properties.name
       ) {
         sectorMap.features[i].properties.crimeScore =
           sectorMap.features[i].properties.crimeScore +
           weightedData[j].crimeScore;
+        break;
       }
     }
   }
+  // for (const i in sectorMap.features) {
+  //   sectorMap.features[i].properties.crimeScore = 0;
+  //   const [long, lat] = findCenter(sectorMap.features[i].geometry.coordinates);
+  //   sectorMap.features[i].properties.communityCentre = { lat: lat, long: long };
+  //   for (const j in weightedData) {
+  //     if (
+  //       weightedData[j].community_name === sectorMap.features[i].properties.name
+  //     ) {
+  //       sectorMap.features[i].properties.crimeScore =
+  //         sectorMap.features[i].properties.crimeScore +
+  //         weightedData[j].crimeScore;
+  //     }
+  //   }
+  // }
 
   let max = 0;
   for (const i in sectorMap.features) {
