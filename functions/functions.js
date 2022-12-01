@@ -149,16 +149,16 @@ function findCenter(long_latArray) {
   let longMax = long_latArray[0][0][0][0];
   let longMin = long_latArray[0][0][0][0];
   for (const i in long_latArray) {
-    if (long_latArray[i] > longMax) {
+    if (long_latArray[i][0][0][0] > longMax) {
       longMax = long_latArray[i][0][0][0];
     }
-    if (long_latArray[i][0] < longMin) {
+    if (long_latArray[i][0][0][0] < longMin) {
       longMin = long_latArray[i][0][0][0];
     }
-    if (long_latArray[i][1] > latMax) {
+    if (long_latArray[i][0][0][1] > latMax) {
       latMax = long_latArray[i][0][0][1];
     }
-    if (long_latArray[i][1] < latMin) {
+    if (long_latArray[i][0][0][1] < latMin) {
       latMin = long_latArray[i][0][0][1];
     }
   }
