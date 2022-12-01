@@ -144,22 +144,22 @@ function weighCrime(crimeData, weightTable, hasRecencyBias = true) {
 }
 
 function findCenter(long_latArray) {
-  let latMax = long_latArray[0][0][0][1];
-  let latMin = long_latArray[0][0][0][1];
-  let longMax = long_latArray[0][0][0][0];
-  let longMin = long_latArray[0][0][0][0];
-  for (const i in long_latArray) {
-    if (long_latArray[i][0][0][0] > longMax) {
-      longMax = long_latArray[i][0][0][0];
+  let latMax = -Infinity;
+  let latMin = Infinity;
+  let longMax = -Infinity;
+  let longMin = Infinity;
+  for (const i in long_latArray[0][0]) {
+    if (long_latArray[0][0][i][0] > longMax) {
+      longMax = long_latArray[0][0][i][0];
     }
-    if (long_latArray[i][0][0][0] < longMin) {
-      longMin = long_latArray[i][0][0][0];
+    if (long_latArray[0][0][i][0] < longMin) {
+      longMin = long_latArray[0][0][i][0];
     }
-    if (long_latArray[i][0][0][1] > latMax) {
-      latMax = long_latArray[i][0][0][1];
+    if (long_latArray[0][0][i][1] > latMax) {
+      latMax = long_latArray[0][0][i][1];
     }
-    if (long_latArray[i][0][0][1] < latMin) {
-      latMin = long_latArray[i][0][0][1];
+    if (long_latArray[0][0][i][1] < latMin) {
+      latMin = long_latArray[0][0][i][1];
     }
   }
   const long = (longMax + longMin) / 2;
