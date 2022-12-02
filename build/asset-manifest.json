@@ -1,0 +1,18 @@
+{
+  "files": {
+    "main.css": "/static/css/main.6af8471a.css",
+    "main.js": "/static/js/main.4e4cb3fa.js",
+    "static/media/MAGGIE_HS_IU-1.jpeg": "/static/media/MAGGIE_HS_IU-1.4bca322295b584b05f4d.jpeg",
+    "static/media/jenn-hs.jpeg": "/static/media/jenn-hs.ee4b91f8ac0d789ac079.jpeg",
+    "static/media/Law&DisOrderLogoV11_Horizontal.png": "/static/media/Law&DisOrderLogoV11_Horizontal.b0cff93d05edbec9ccf7.png",
+    "static/media/jared-hs.jpeg": "/static/media/jared-hs.35f1e3eabb085339ba36.jpeg",
+    "static/media/emmanuel-hs.jpeg": "/static/media/emmanuel-hs.93176ccb9cdc8c9aa265.jpeg",
+    "index.html": "/index.html",
+    "main.6af8471a.css.map": "/static/css/main.6af8471a.css.map",
+    "main.4e4cb3fa.js.map": "/static/js/main.4e4cb3fa.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.6af8471a.css",
+    "static/js/main.4e4cb3fa.js"
+  ]
+}
